@@ -1,33 +1,10 @@
 #include "munit/munit.h"
 #include "snekobject.h"
-
-/* Language tests */
-
-MunitResult test_create_empty_array() {
-  snek_object_t *obj = new_snek_array(2);
-  munit_assert_int(obj->kind, ==, ARRAY);
-  munit_assert_ulong(obj->data.v_array.size, ==, 2);
-  free(obj->data.v_array.elements);
-  free(obj);
-  return MUNIT_OK;
-}
-
-/* Refcount tests*/
-
-MunitResult test_int_has_refcount() {
-  snek_object_t *obj = new_snek_integer(10);
-  munit_assert_int(obj->refcount, ==, 1);
-  free(obj);
-  return MUNIT_OK;
-}
-
-MunitResult test_float_has_refcount() {
-  snek_object_t *obj = new_snek_float(1.5);
-  munit_assert_int(obj->refcount, ==, 1);
-  return MUNIT_OK;
-}
+#include "tests/refcount.h"
+#include "tests/sneklang.h"
 
 int main() {
+
   MunitTest refcount_tests[] = {
       {
           "/int",
@@ -50,8 +27,96 @@ int main() {
 
   MunitTest lang_tests[] = {
       {
-          "/empty-array",
+          "/integer/positive",
+          test_integer_positive,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/integer/zero",
+          test_integer_zero,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/integer/negative",
+          test_integer_negative,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/float/positive",
+          test_float_positive,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/float/zero",
+          test_float_zero,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/float/negative",
+          test_float_negative,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/string/copies",
+          test_string_copied,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/vector3/null",
+          test_vector3_null,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/vector3/multiple-objects",
+          test_vector3_multiple_objects,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/vector3/same-object",
+          test_vector3_same_object,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/array/empty",
           test_create_empty_array,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "/array/calloc",
+          test_array_used_calloc,
           NULL,
           NULL,
           MUNIT_TEST_OPTION_NONE,
@@ -60,17 +125,17 @@ int main() {
       {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   };
 
-  MunitSuite refcount[] = {
+  MunitSuite tests[] = {
       {
-          "/refcount",
-          refcount_tests,
+          "/sneklang",
+          lang_tests,
           NULL,
           1,
           MUNIT_SUITE_OPTION_NONE,
       },
       {
-          "/sneklang",
-          lang_tests,
+          "/refcount",
+          refcount_tests,
           NULL,
           1,
           MUNIT_SUITE_OPTION_NONE,
@@ -79,7 +144,7 @@ int main() {
   };
 
   MunitSuite suites = {
-      "/refcount-gc", NULL, refcount, 1, MUNIT_SUITE_OPTION_NONE,
+      "", NULL, tests, 1, MUNIT_SUITE_OPTION_NONE,
   };
 
   return munit_suite_main(&suites, NULL, 0, NULL);
