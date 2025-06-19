@@ -2,6 +2,45 @@
 #include <stdlib.h>
 #include <string.h>
 
+void refcount_dec(snek_object_t *obj) {
+  if (obj == NULL)
+    return;
+  obj->refcount--;
+  if (obj->refcount == 0) {
+    refcount_free(obj);
+    return;
+  }
+  return;
+}
+
+void refcount_free(snek_object_t *obj) {
+  switch (obj->kind) {
+  case INTEGER:
+  case FLOAT:
+    free(obj);
+    return;
+  case STRING:
+    free(obj->data.v_string);
+    free(obj);
+    return;
+  case VECTOR3:
+    refcount_dec(obj->data.v_vector3.x);
+    refcount_dec(obj->data.v_vector3.y);
+    refcount_dec(obj->data.v_vector3.z);
+    free(obj);
+    return;
+  default:
+    return;
+  }
+}
+
+void refcount_inc(snek_object_t *obj) {
+  if (obj == NULL)
+    return;
+  obj->refcount++;
+  return;
+}
+
 snek_object_t *_new_snek_object() {
   snek_object_t *obj = (snek_object_t *)calloc(1, sizeof(snek_object_t));
   if (obj == NULL)
@@ -34,6 +73,9 @@ snek_object_t *new_snek_vector3(snek_object_t *x, snek_object_t *y,
     return NULL;
   obj->kind = VECTOR3;
   obj->data.v_vector3 = (snek_vector_t){.x = x, .y = y, .z = z};
+  refcount_inc(x);
+  refcount_inc(y);
+  refcount_inc(z);
   return obj;
 }
 
