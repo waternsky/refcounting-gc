@@ -62,6 +62,38 @@ int main() {
           MUNIT_TEST_OPTION_NONE,
           NULL,
       },
+      {
+          "array/set",
+          test_array_set,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "array/get",
+          test_array_get,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "array/get-oob",
+          test_get_outside_bound,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
+      {
+          "array/free",
+          test_array_free,
+          NULL,
+          NULL,
+          MUNIT_TEST_OPTION_NONE,
+          NULL,
+      },
       {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   };
 
